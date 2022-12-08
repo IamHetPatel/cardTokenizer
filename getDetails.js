@@ -47,11 +47,15 @@ export default getDetails = ({navigation}) => {
     <View>
     <View>
       {isLoading ? <Text>Loading...</Text> : 
-      ( <View>
-          <Text>FirstName: {fname}</Text>
-          <Text>LastName: {lname}</Text>
-          <Text>Phone: {phone}</Text>
-        </View>
+      ( <><View style={styles.TextView}>
+              <Text style={{ marginBottom: 5, fontWeight: 800 }}>FirstName: {fname}</Text>
+            </View>
+            <View style={styles.TextView}>
+                <Text style={{ marginBottom: 5, fontWeight: 800 }}>LastName: {lname}</Text>
+              </View>
+              <View style={styles.TextView}>
+                <Text style={{ marginBottom: 5, fontWeight: 800 }}>Phone: {phone}</Text>
+              </View></>
       )}
     </View>
     <View style={{marginTop:30,marginBottom:30}}>
@@ -74,6 +78,15 @@ export default getDetails = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
+  TextView: {
+    alignItems : 'center',
+    backgroundColor : '#a29bfe',
+    fontColor : '#FFFFFF',
+    marginBottom : 15,
+    borderRadius : 10,
+    width : deviceWidth - 25,
+    height : 25
+  },
     item:{
         flex:1,
         alignSelf:'stretch',
