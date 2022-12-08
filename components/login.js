@@ -1,6 +1,6 @@
 // components/login.js
 import React, { Component } from "react";
-import { Storage } from "expo-storage"
+import * as SecureStore from 'expo-secure-store'
 import {
   StyleSheet,
   Text,
@@ -33,6 +33,7 @@ export default class Login extends Component {
   //   this.props.navigation.navigate('getDetails');
   // }
 
+  
 
   _userLogin = () => {
     let res;
@@ -69,10 +70,12 @@ export default class Login extends Component {
           return response
         })
         .then(response => response.text())
-        .then((result) => {
+        .then(async (result) => {
           result = JSON.parse(result)
-          Storage.setItem({ key: "access_token", value: result.tokens.access_token })
+          await SecureStore.setItemAsync("access_token", result.tokens.access_token)
+          await SecureStore.setItemAsync("id", Number(result.id).toString())
           console.log(result.tokens.access_token)
+          // console.log(t)
         })
         .then(() => {
           console.log("statuscode at login fxn= ", statuscode);

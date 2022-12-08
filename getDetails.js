@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import {Text, View,StyleSheet,Button } from 'react-native';
+import * as SecureStore from "expo-secure-store"
+
+const getToken = async ()=>{
+  let result = {}
+  result.t = await SecureStore.getItemAsync("access_token");
+  result.id = await SecureStore.getItemAsync("id");
+  return result
+}
+
 
 
 export default getDetails = ({navigation}) => {
@@ -9,14 +18,16 @@ export default getDetails = ({navigation}) => {
   const [lname, setLname] = useState([]);
   const [phone, setPhone] = useState([]);
   console.log(data);
-  console.log(localStorage.getItem("access_token"))
+  
   useEffect(() => {
-    let id = 1;
+    getToken()
+    .then((result)=>{
+      let id = result.id;
     fetch('https://web-production-eedc.up.railway.app/users/consumer/'+`${id}`,{
         method: "GET",
         headers:{
             Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcwNjA4MTkyLCJpYXQiOjE2NzA1MjE3OTIsImp0aSI6ImE4YTFmNmUxMGZlNzQ2MjQ4ZDExYzM2ODVkOTQyMmEyIiwidXNlcl9pZCI6MX0.S4k8S8Mt0V7ygWV2DqD95mqD0TZfoeUmuwRRUcoAzOw"
+            `Bearer ${result.t}`
         }
     })
       .then((response) => response.json())
@@ -27,6 +38,9 @@ export default getDetails = ({navigation}) => {
       })
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
+    })
+    .catch(err=>console.log(err))
+    
   }, []);
 
   return (
