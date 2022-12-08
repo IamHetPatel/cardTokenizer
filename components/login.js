@@ -83,7 +83,18 @@ export default class Login extends Component {
             this.props.navigation.navigate('getDetails');
           }
           else {
-            Alert.alert('Enter Valid Credentials')
+             Alert.alert(
+              "INVALID CREDENTIALS",
+              "Please enter correct username and password",
+              [
+                {
+                  text: "Cancel",
+                  onPress: () => navigation.navigate('login'),
+                  style: "cancel"
+                },
+                
+              ]
+            );
           }
         })
         .catch(error => console.log('error', error));
