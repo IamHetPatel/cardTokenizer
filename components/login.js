@@ -28,10 +28,6 @@ export default class Login extends Component {
     this.setState(state);
   }
 
-  // functino1 =()=>{
-  //   this.userLogin();
-  //   this.props.navigation.navigate('getDetails');
-  // }
 
   
 
@@ -80,21 +76,10 @@ export default class Login extends Component {
         .then(() => {
           console.log("statuscode at login fxn= ", statuscode);
           if (statuscode == 200) {
-            this.props.navigation.navigate('getDetails');
+            this.props.navigation.navigate('UserProfile');
           }
           else {
-             Alert.alert(
-              "INVALID CREDENTIALS",
-              "Please enter correct username and password",
-              [
-                {
-                  text: "Cancel",
-                  onPress: () => navigation.navigate('login'),
-                  style: "cancel"
-                },
-                
-              ]
-            );
+            Alert.alert('Enter Valid Credentials');
           }
         })
         .catch(error => console.log('error', error));

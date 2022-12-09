@@ -6,26 +6,25 @@ import { Button, IconButton } from "react-native-paper";
 
 const Dashboard = ({ navigation }) => {
   return (
-    <SafeAreaProvider>
       <View style={styles.container}>
         <Header label="Tokenizer" />
-        <Text>Tokenising Action Going on</Text>
+        <Text>Click here to view your User Profile</Text>
         <StatusBar barStyle={"dark-content"} />
+        <View style={{marginTop:30,marginBottom:30}}>
         <IconButton
           icon="account-box"
           iconColor={`#8a2be2`}
           size={50}
-          onPress={() => navigation.navigate('getDetails')}
+          onPress={() => navigation.navigate('UserProfile')}
         />
+        </View>
         <Button
-          color="#981ddf"
-          style={styles.button}
+          color="#fff800"
           title="Card Details"
-          onPress={() =>  navigation.navigate('card')}
-        >Card Details</Button>
+          onPress={() => navigation.navigate('Card')}
+        />
         
       </View>
-    </SafeAreaProvider>
   );
 };
 

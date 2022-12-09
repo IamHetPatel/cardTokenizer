@@ -10,40 +10,48 @@ import {
 } from "react-native";
 import { Dimensions } from "react-native";
 import { Avatar, Button, Card } from "react-native-paper";
-
+import * as SecureStore from "expo-secure-store"
 const wait = (timeout) => {
   return new Promise((resolve) => setTimeout(resolve, timeout));
 };
 const leftContent = (props) => <Avatar.Icon {...props} icon="credit-card" />;
-
+const getToken = async ()=>{
+  let result = {}
+  result.t = await SecureStore.getItemAsync("access_token");
+  result.id = await SecureStore.getItemAsync("id");
+  return result
+}
 
 export default Listing = () => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [refetch, setRefetch] = useState(false);
 
-  deleteCard(() => {
+//   deleteCard(() => {
     
-}
-  );
+// }
+//   );
 
   useEffect(() => {
+    getToken()
+    .then((result)=>{
     fetch("https://web-production-eedc.up.railway.app/card/", {
       method: "GET",
       headers: {
         Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcwNjAzOTM4LCJpYXQiOjE2NzA1MTc1MzgsImp0aSI6IjEzMWVlM2I4ZjNmYzRkY2M5YThiZDg4ZDhhZDdjYTE0IiwidXNlcl9pZCI6MX0.ufrODuhavXIZzc77wxIj7ERN0QYOK4Y0X0WmRWjeJTc",
+        `Bearer ${result.t}`,
       },
     })
       .then((response) => response.json())
       .then((json) => setData(json))
+  })
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
   }, [refetch]);
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollView}>
+
         <View style={{ flex: 500, padding: 1 }}>
           {isLoading ? (
             <Text>Loading...</Text>
@@ -131,8 +139,11 @@ export default Listing = () => {
                     <Card.Actions>
                       <Button 
                       color="#FFFFFF"
-                      onPress={() =>  {var myHeaders = new Headers();
-                        myHeaders.append("Authorization", "Basic PEJhc2ljIEF1dGggVXNlcm5hbWU+OjxCYXNpYyBBdXRoIFBhc3N3b3JkPg==");
+                      onPress={() =>  {
+                        getToken()
+                        .then((result)=>{
+                        var myHeaders = new Headers();
+                        myHeaders.append("Authorization", `Bearer ${result.t}`);
                         
                         var requestOptions = {
                           method: 'DELETE',
@@ -140,9 +151,10 @@ export default Listing = () => {
                           redirect: 'follow'
                         };
                         
-                        fetch("https://web-production-eedc.up.railway.app/card/"+`${this.cardId}`, requestOptions)
+                        fetch("https://web-production-eedc.up.railway.app/card/"+`${result.cardId}`, requestOptions)
                           .then(response => response.text())
                           .then(result => console.log(result))
+                      })
                           .catch(error => console.log('error', error));}}
                       >Delete</Button>
                     </Card.Actions>
@@ -168,7 +180,6 @@ export default Listing = () => {
         >
           🔀 Refresh
         </Button>
-      </ScrollView>
     </SafeAreaView>
   );
 };

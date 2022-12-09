@@ -17,7 +17,7 @@ export default class Signup extends Component {
     this.state = {
       username: "",
       email: "",
-      role: "",
+      role: "CONSUMER",
       password: "",
       isLoading: false,
     };
@@ -28,12 +28,12 @@ export default class Signup extends Component {
     this.setState(state);
   };
 
-  functino =({navigation})=>{
+  functino =()=>{
     this.registerUser();
-    navigation.navigate("dashboard");
+    this.props.navigation.navigate("login");
   }
 
-  registerUser = ({navigation}) => {
+  registerUser = () => {
     if (this.state.email === "" && this.state.password === "") {
       Alert.alert("Enter details to signup!");
     } else {
@@ -107,12 +107,12 @@ export default class Signup extends Component {
           value={this.state.email}
           onChangeText={(val) => this.updateInputVal(val, "email")}
         />
-        <TextInput
+        {/* <TextInput
           style={styles.inputStyle}
           placeholder="Role"
           value={this.state.role}
           onChangeText={(val) => this.updateInputVal(val, "role")}
-        />
+        /> */}
         <TextInput
           style={styles.inputStyle}
           placeholder="Password"
@@ -124,7 +124,7 @@ export default class Signup extends Component {
         <Button
           color="#3740FE"
           title="Signup"
-          onPress={() => this.registerUser()}
+          onPress={() => this.functino()}
         />
         <Text
           style={styles.loginText}

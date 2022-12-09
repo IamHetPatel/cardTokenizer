@@ -1,8 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import UpdateProfile from "./UpdateProfile.js";
-import getDetails from "./getDetails.js";
-import card from "./card.js";
+import UserProfile from "./UserProfile";
+import Card from "./Card.js";
 import DashboardScreen from './Dashboard';
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
@@ -48,12 +48,16 @@ const MyStack = () => {
         <Stack.Screen
           name="Dashboard"
           component={DashboardScreen}
-          options={{ headerShown: false }}
+          
         />
-        <Stack.Screen name="getDetails" component={getDetails} />
-        <Stack.Screen name="UpdateProfile" component={UpdateProfile} />
-        <Stack.Screen name="card" component={card} />
-        <Stack.Screen name="Listing" component={Listing} />
+        <Stack.Screen name="UserProfile" component={UserProfile}
+         />
+        <Stack.Screen name="UpdateProfile" component={UpdateProfile}
+       />
+        <Stack.Screen name="Card" component={Card} 
+        />
+        <Stack.Screen name="Listing" component={Listing}
+         />
         
       </Stack.Navigator>
     </NavigationContainer>

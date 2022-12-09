@@ -8,6 +8,14 @@ import {
   Alert
 } from "react-native";
 
+import * as SecureStore from "expo-secure-store"
+
+const getToken = async ()=>{
+  let result = {}
+  result.t = await SecureStore.getItemAsync("access_token");
+  result.id = await SecureStore.getItemAsync("id");
+  return result
+}
 
 export default class Update extends Component {
   
@@ -30,12 +38,13 @@ export default class Update extends Component {
   functino =()=>{
     this.userUpdate();
     Alert.alert("Details Updated");
-    this.props.navigation.navigate('getDetails');
+    this.props.navigation.navigate('UserProfile');
   }
   
   userUpdate = () => {
-    
-    
+    getToken()
+    .then((result)=>{
+      let id = result.id;
     if (this.state.fname === "" && this.state.lname === "" && this.state.user === "" && this.state.phone === "") {
       Alert.alert("Enter details to Update!");
     } else {
@@ -45,13 +54,13 @@ export default class Update extends Component {
     var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
       myHeaders.append("Accept", "application/json");
-      myHeaders.append("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcwNjA2MDMzLCJpYXQiOjE2NzA1MTk2MzMsImp0aSI6ImMxZWUyNjg1ZTMyZTRhNDNhMmQ1MmFjMDQ5N2YwM2U3IiwidXNlcl9pZCI6MX0.u5oZklFDqGzl1vJE84Hu2hltecvkdkLnfM4np4dgKxM");
+      myHeaders.append("Authorization", `Bearer ${result.t}`);
     var raw = JSON.stringify({
       user: this.state.user,
       fname: this.state.fname,
       lname: this.state.lname,
       phone: this.state.phone
-});
+})
 
 var requestOptions = {
   method: 'PUT',
@@ -59,13 +68,12 @@ var requestOptions = {
   body: raw,
   redirect: "follow"
 };
-let id = 7;
 fetch("https://web-production-eedc.up.railway.app/users/consumer/"+`${id}`, requestOptions)
   .then(response => response.text())
   .then(result => console.log(result))
+}})
   .catch(error => console.log("error", error));
 }
-  };
 
 render() {
     if (this.state.isLoading) {
@@ -115,8 +123,6 @@ render() {
           title="Home"
           onPress={() =>this.props.navigation.navigate('Dashboard')}
         />
-
-            
       </View>
     );
   }

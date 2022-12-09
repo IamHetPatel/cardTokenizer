@@ -1,172 +1,117 @@
-import React from 'react';
-import { Container,Row,Col,Form ,Button} from 'bootstrap';
-import {connect} from 'react-redux';
-const axios = require('axios');
+import React, { useEffect, useState } from 'react';
+import {Text, View,StyleSheet,Button,Dimensions } from 'react-native';
+import * as SecureStore from "expo-secure-store"
 
-class UserProfile extends React.Component {
-    constructor(props){
-        super(props);
-        this.state={
-            id:this.props.id,
-            fname:this.props.fname,
-            lname:this.props.lname,
-            uploadedFile:null
+const getToken = async ()=>{
+  let result = {}
+  result.t = await SecureStore.getItemAsync("access_token");
+  result.id = await SecureStore.getItemAsync("id");
+  return result
+}
+
+// const deviceWidth = Math.round(Dimensions.get('window').width)
+
+export default UserProfile = ({navigation}) => {
+  const [isLoading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+  const [fname, setFname] = useState([]);
+  const [lname, setLname] = useState([]);
+  const [phone, setPhone] = useState([]);
+  console.log(data);
+  
+  useEffect(() => {
+    getToken()
+    .then((result)=>{
+      let id = result.id;
+    fetch('https://web-production-eedc.up.railway.app/users/consumer/'+`${id}`,{
+        method: "GET",
+        headers:{
+            Authorization:
+            `Bearer ${result.t}`
         }
-    }
+    })
+      .then((response) => response.json())
+      .then((json) => {setData(json);
+      setFname(json.fname);
+      setLname(json.lname);
+      setPhone(json.phone);
+      })
+      .catch((error) => console.error(error))
+      .finally(() => setLoading(false));
+    })
+    .catch(err=>console.log(err))
+    
+  }, []);
 
-    fetchUserDetails=(id)=>{
-        //console.log(user_id);
-        var myHeaders = new Headers();
-myHeaders.append("Authorization", "Basic <credentials>");
-
-        var requestOptions = {
-            method: 'GET',
-            headers: myHeaders,
-            redirect: 'follow'
+  return (
+    <View>
+    <View>
+      {isLoading ? <Text>Loading...</Text> : 
+      ( <><View style={styles.TextView}>
+              <Text style={{ marginBottom: 5, fontWeight: '500' }}>FirstName: {fname}</Text>
+            </View>
+            <View style={styles.TextView}>
+                <Text style={{ marginBottom: 5, fontWeight: '500' }}>LastName: {lname}</Text>
+              </View>
+              <View style={styles.TextView}>
+                <Text style={{ marginBottom: 5, fontWeight:'500' }}>Phone: {phone}</Text>
+              </View></>
+      )}
+    </View>
+    <View style={{marginTop:30,marginBottom:30}}>
+        <Button
+          color="#3740FE"
+          style={styles.button}
+          title="Edit"
+          onPress={() =>navigation.navigate("UpdateProfile")}
+        />
+        </View>
+        <Button
+          color="#3740FE"
+          style={styles.button}
+          title="Create your CARDs"
+          onPress={() =>navigation.navigate("Card")}
+        />
+      
+  </View>
+  );
 };
-        axios.get("https://web-production-eedc.up.railway.app/users/consumer/:id"+user_id,{
-            headers: {
-                "content-type": "application/json"
-              }
-        }).then(res=>{
-            console.log(res);
-            this.setState({email:res
-                .data.results[0].email});
-            this.setState({profileImage:res.data.results[0].profileImage})
-        })
-        .catch(err=>console.log(err))
-    }
 
-    changeProfileImage=(event)=>{
-       
-        this.setState({uploadedFile:event.target.files[0]});
-    }
-
-    UpdateProfileHandler=(e)=>{
-        e.preventDefault();
-        //create object of form data
-        const formData=new FormData();
-        formData.append("profileImage",this.state.uploadedFile);
-        formData.append("user_id",this.state.user_id);
-
-        //update-profile
-        axios.post("https://web-production-eedc.up.railway.app/users/consumer/:id",formData,{
-            headers: {
-                "content-type": "application/json"
-              }
-        }).then(res=>{
-            console.log(res);
-           this.setState({msg:res.data.message});
-           this.setState({profileImage:res.data.results.profileImage});
-        })
-        .catch(err=>console.log(err))
-    }
-
-
-    componentDidMount(){
-     this.fetchUserDetails(this.state.user_id);
-    }
-
-render(){
-
-    if(this.state.profileImage){
-        var imagestr=this.state.profileImage;
-        imagestr = imagestr.replace("public/", "");
-        var profilePic="http://localhost:5000/"+imagestr;
-    }else{
-         profilePic=DefaultUserPic;
-    }
-
-    return (
-        <Container>
-        <Row>
-       <Col>
-       <img src={profilePic} alt="profils pic" />
-       </Col>
-        <Col>
-            <h1>User Profile</h1>
-            <Form className="form">     
-    <p>{this.state.msg}</p>
-  <Form.Group controlId="formCategory1">
-    <Form.Label>Username</Form.Label>
-    <Form.Control type="text" defaultValue={this.state.username}/>
-  
-  </Form.Group>
-  <Form.Group controlId="formCategory2">
-    <Form.Label>Email</Form.Label>
-    <Form.Control type="email" defaultValue={this.state.email} />
-  
-  </Form.Group>
- 
-  {/* <Form.Group controlId="formCategory4">
-    <Form.Label>Profile Image</Form.Label>
-    <Form.Control type="file" name="profileImage" onChange={this.changeProfileImage}/>
-    </Form.Group>
-  <Button variant="primary" onClick={this.UpdateProfileHandler}>Update Profile</Button> */}
-  </Form>
-   </Col>
-
-       </Row>
-        </Container>
-    )
-}
-}
-
-const mapStatetoProps=(state)=>{
-    return{
-        user_id:state.user.userDetails.userid,
-        username:state.user.userDetails.username,
-       email:state.user.email,
-    //    profileImage: state.user.profileImage,
-       msg:state.user.msg
-    }
-   }
-   
-   
-
-   export default connect(mapStatetoProps)(UserProfile);
-
-
-
-// import React, { useState } from 'react';
-// import { View, TextInput, Button, AsyncStorage } from '@react-native-async-storage/async-storage';
-
-// const UserProfile = () => {
-//   const [name, setName] = useState('');
-//   const [email, setEmail] = useState('');
-//   const [Number, setPhone] = useState('');
-
-//   const saveProfile = async () => {
-//     try {
-//       await AsyncStorage.setItem('@user:name', name);
-//       await AsyncStorage.setItem('@user:email', email);
-//       await AsyncStorage.setItem('@user:phone', Number);
-//     } catch (e) {
-//       // saving error
-//     }
-//   };
-
-//   return (
-//     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-//       <TextInput
-//         placeholder="Name"
-//         value={name}
-//         onChangeText={text => setName(text)}
-//       />
-//       <TextInput
-//         placeholder="Email"
-//         value={email}
-//         onChangeText={text => setEmail(text)}
-//       />
-//       <TextInput
-//         placeholder="Phone"
-//         value={Number}
-//         onChangeText={text => setPhone(text)}
-//       />
-//       <Button title="Save Profile" onPress={saveProfile} />
-//     </View>
-//   );
-// };
-
-// export default UserProfile;
-
+const styles = StyleSheet.create({
+  TextView: {
+    alignItems : 'center',
+    backgroundColor : '#a29bfe',
+    fontColor : '#FFFFFF',
+    marginBottom : 15,
+    borderRadius : 10,
+    // width : deviceWidth - 25,
+    height : 25
+  },
+    item:{
+        flex:1,
+        alignSelf:'stretch',
+        marginBottom:50,
+        padding:20,
+        alignItems:'center',
+        borderBottomColor:'#fff800',
+        borderBottomWidth:10,
+        justifyContent:'center',
+    },
+    container:{
+      flex: 1,
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      padding: 35,
+      backgroundColor: "#fff",
+      alignItems:'flex-start',
+        
+    },
+    button: {
+      flex:1,
+      justifyContent:'center',
+      alignContent:'center',
+      margin: 500, 
+      padding:500,
+    },
+})

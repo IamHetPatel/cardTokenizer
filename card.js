@@ -1,7 +1,14 @@
 import React, { Component } from "react";
 import {View,  SafeAreaView , StyleSheet,TextInput,Dimensions,ActivityIndicator,Alert,Button} from 'react-native';
 import { IconButton } from "react-native-paper";
+import * as SecureStore from "expo-secure-store"
 
+const getToken = async ()=>{
+  let result = {}
+  result.t = await SecureStore.getItemAsync("access_token");
+  result.id = await SecureStore.getItemAsync("id");
+  return result
+}
 const deviceWidth = Math.round(Dimensions.get('window').width)
 export default class Card extends Component {
    constructor() {
@@ -20,10 +27,13 @@ export default class Card extends Component {
     functino =()=>{
       this.cardRegister();
       Alert.alert("New Card Registered");
+      this.props.navigation.navigate('Listing')
     }
 
       
    cardRegister = () => {
+    getToken()
+    .then((result)=>{
       if (this.state.fullPAN === "" && this.state.expDate === "") {
          Alert.alert("Enter details to Update!");
        } else {
@@ -34,7 +44,7 @@ export default class Card extends Component {
       var myHeaders = new Headers();
          myHeaders.append("Content-Type", "application/json");
          myHeaders.append("Accept", "application/json");
-         myHeaders.append("Authorization", "Basic PEJhc2ljIEF1dGggVXNlcm5hbWU+OjxCYXNpYyBBdXRoIFBhc3N3b3JkPg==");
+         myHeaders.append("Authorization", `Bearer ${result.t}`);
 
 var raw = JSON.stringify({
 
@@ -53,9 +63,10 @@ var requestOptions = {
 fetch("https://web-production-eedc.up.railway.app/card/", requestOptions)
   .then(response => response.text())
   .then(result => console.log(result))
+}})
   .catch(error => console.log('error', error));
    }
-};
+
 
 render() {
    if (this.state.isLoading) {
