@@ -28,6 +28,10 @@ export default class Login extends Component {
     this.setState(state);
   }
 
+  // functino1 =()=>{
+  //   this.userLogin();
+  //   this.props.navigation.navigate('getDetails');
+  // }
 
   
 

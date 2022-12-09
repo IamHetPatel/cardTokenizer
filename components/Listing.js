@@ -22,15 +22,14 @@ const getToken = async ()=>{
   return result
 }
 
+
 export default Listing = () => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [refetch, setRefetch] = useState(false);
 
-//   deleteCard(() => {
-    
-// }
-//   );
+ 
+  
 
   useEffect(() => {
     getToken()
@@ -139,23 +138,7 @@ export default Listing = () => {
                     <Card.Actions>
                       <Button 
                       color="#FFFFFF"
-                      onPress={() =>  {
-                        getToken()
-                        .then((result)=>{
-                        var myHeaders = new Headers();
-                        myHeaders.append("Authorization", `Bearer ${result.t}`);
-                        
-                        var requestOptions = {
-                          method: 'DELETE',
-                          headers: myHeaders,
-                          redirect: 'follow'
-                        };
-                        
-                        fetch("https://web-production-eedc.up.railway.app/card/"+`${result.cardId}`, requestOptions)
-                          .then(response => response.text())
-                          .then(result => console.log(result))
-                      })
-                          .catch(error => console.log('error', error));}}
+                     
                       >Delete</Button>
                     </Card.Actions>
                   </Card>

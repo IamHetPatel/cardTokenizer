@@ -19,10 +19,10 @@ const Dashboard = ({ navigation }) => {
         />
         </View>
         <Button
-          color="#fff800"
+          color="#981ddf"
           title="Card Details"
           onPress={() => navigation.navigate('Card')}
-        />
+        >Card Details</Button>
         
       </View>
   );
